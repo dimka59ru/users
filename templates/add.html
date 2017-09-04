@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+     <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet" type="text/css">
+    <title>Добавить человека</title>
+</head>
+<body>
+    <div class="wrapper">
+
+    {% if messages %}
+        <p class=error><strong>Ошибки:</strong></p>
+        {% for message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <table>
+        <tr>
+            <td>
+              <form action="{{ url_for('add') }}" method="POST" class="add">
+                  <dl>
+                      <dt>Имя:</dt>
+                      <dd><input type=text size=20 name=first_name placeholder="Имя"></dd>
+                      <dt>Фамилия:</dt>
+                      <dd><input type=text size=20 name=last_name placeholder="Фамилия"></dd>
+                      <dt>Дата рождения:</dt>
+                      <dd><input type=date size=20 name=date_of_birth ></dd>
+                      <dt>Адрес:</dt>
+                      <dd><textarea rows="5" cols="30" name="address" placeholder="Адрес"></textarea></dd>
+                      <input type=submit value="Добавить">
+                  </dl>
+                <!--<dl>-->
+                    <!--<dt>Оборудование:</dt>-->
+                    <!--<dl><input type=text size=30 name=device_name>-->
+                    <!--<input type=submit value="Добавить"></dl>-->
+                <!--</dl>-->
+            </form>
+            </td>
+        </tr>
+
+    </table>
+</div>
+</body>
+</html>
