@@ -6,6 +6,12 @@
     <title>Список людей</title>
 </head>
 <body>
+<div id="wrapper">
+    <div id="header">
+        <a href="/add">Добавить человека</a>
+        <a href="/?sort=lastname">Сортировать по фамилии</a>
+        <a href="/?sort=firstname">Сортировать по имени</a>
+        <a href="/">Сортировать по ID</a>
     {% with messages = get_flashed_messages() %}
         {% if messages %}
         <ul class=flashes>
@@ -14,11 +20,40 @@
         {% endfor %}
         </ul>
          {% endif %}
-{% endwith %}
+    {% endwith %}
 
-{% for user in users %}
-   <p>{{user.id}} {{user.last_name}}</p>
-{% endfor %}
+
+    </div>
+
+    <div id="main">
+    <table id="user_list">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Фамилия</th>
+                <th>Имя</th>
+                <th>Дата рождения</th>
+                <th>Адрес</th>
+            </tr>
+        </thead>
+
+        {% for user in users %}
+        <tr>
+            <td><a href="/edit/{{user.id}}">{{user.id}}</a></td>
+            <td>{{user.last_name}}</td>
+            <td>{{user.first_name}}</td>
+            <td>{{user.date_of_birth.strftime('%d.%m.%Y')}}</td>
+            <td>{{user.address}}</td>
+        </tr>
+
+        {% endfor %}
+    </table>
+    </div>
+</div>
+
+
+
+
 
 </body>
 </html>

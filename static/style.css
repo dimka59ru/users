@@ -2,6 +2,96 @@ body {
 background: #edf1f5;
 }
 
-dt {
-    margin-top: 1em; /* Отступ сверху */
-   }
+#wrapper{
+    width: 760px;
+    background: #FFF;
+    margin: 0 auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+
+}
+#header a {
+    padding: 20px;
+}
+
+
+#user_list {
+    width: 750px;
+    border-collapse: collapse;
+    margin:20px auto;
+}
+
+#user_list tr:nth-of-type(odd) {
+    background: #eee;
+    }
+
+#user_list th {
+    background: #3498db;
+    color: white;
+    font-weight: bold;
+    }
+
+#user_list td, th {
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: left;
+    font-size: 18px;
+}
+
+#add_form {
+    width: 500px;
+    margin: 0 auto;
+}
+
+
+#add_form input.txt, #add_form textarea.txt {
+    border: 1px solid #CCC;
+    width: 200px;
+    padding:5px;
+    font: 0.8em Arial, Helvetica, sans-serif;
+}
+
+#add_form input.btn {
+    color: #00008B;
+    background-color: #ADD8E6;
+    border: 1px solid #CCC;
+    padding: 5px;
+}
+
+#add_form div {
+    clear: left;
+    margin: 0;
+    padding: 0;
+    padding-top: 5px;
+}
+
+#add_form div label {
+    float: left;
+    width: 40%;
+    font-size: 18px;
+}
+#add_form  fieldset {
+    border: 1px dotted #CCC;
+    margin-top: 1.4em;
+    padding: 0.6em;
+}
+#add_form legend {
+    font: bold 0.8em Arial, Helvetica, sans-serif;
+    color: #00008B;
+    background-color: #FFFFFF;
+}
+
+.error {
+padding: 5px;
+border: 1px solid red;
+background: #FFEEEE;
+margin-top: 10px;
+}
+
+.flashes {
+padding: 5px;
+border: 1px solid green;
+background: #EEFFEE;
+margin-top: 5px;
+list-style-type: none;
+}

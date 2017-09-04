@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, render_template, url_for, request, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
-from os.path import expanduser
 from datetime import datetime
 import os
 import sys
@@ -14,7 +13,7 @@ app = Flask(__name__)
 app.secret_key = 'some_secret'
 
 
-# Для генерации уникальных ссылок на статичные файлы, чтоб не кэшировалось
+# Для генерации уникальных ссылок на статичные файлы, чтоб не кэшировались
 @app.context_processor
 def override_url_for():
     return dict(url_for=dated_url_for)
@@ -29,10 +28,6 @@ def dated_url_for(endpoint, **values):
             values['q'] = int(os.stat(file_path).st_mtime)
     return url_for(endpoint, **values)
 
-
-# home = expanduser("~")
-# db_uri = 'sqlite:////{}/users.db'.format(home)
-# print db_uri
 
 db_path = os.path.join(os.path.dirname(__file__), 'users.db')
 db_uri = 'sqlite:///{}'.format(db_path)
@@ -51,8 +46,21 @@ class User(db.Model):
 
 @app.route('/')
 def index():
-    users = User.query.all()
-    print users
+    # главная страница
+    users = []
+    if request.args.get('sort'):
+        # Если есть в сроке параметр сортировки, то делаем выбор из базы с учетом параметра
+        sort = request.args.get('sort')
+
+        if sort == "lastname":
+            # выбор с сортировкой по фамилии
+            users = User.query.order_by(User.last_name)
+        elif sort == "firstname":
+            # выбор с сортировкой по имени
+            users = User.query.order_by(User.first_name)
+    else:
+        users = User.query.order_by(User.id)
+
     return render_template('index.html', users=users)
 
 
@@ -67,7 +75,7 @@ def add():
         if not messages:
             first_name = request.form['first_name']
             last_name = request.form['last_name']
-            date_of_birth = datetime.strptime(request.form['date_of_birth'] , '%Y-%m-%d')
+            date_of_birth = datetime.strptime(request.form['date_of_birth'], '%Y-%m-%d')
             address = request.form['address']
 
             user = User(first_name=first_name, last_name=last_name, date_of_birth=date_of_birth, address=address)

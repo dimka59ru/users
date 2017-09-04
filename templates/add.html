@@ -6,40 +6,51 @@
     <title>Добавить человека</title>
 </head>
 <body>
-    <div class="wrapper">
-
+    <div id="wrapper">
+<div id="header">
+    <a href="/">На главную</a>
     {% if messages %}
-        <p class=error><strong>Ошибки:</strong></p>
+        <div class=error><strong>Ошибки:</strong>
         {% for message in messages %}
         <p>{{ message }}</p>
         {% endfor %}
+        </div>
     {% endif %}
 
-    <table>
-        <tr>
-            <td>
-              <form action="{{ url_for('add') }}" method="POST" class="add">
-                  <dl>
-                      <dt>Имя:</dt>
-                      <dd><input type=text size=20 name=first_name placeholder="Имя"></dd>
-                      <dt>Фамилия:</dt>
-                      <dd><input type=text size=20 name=last_name placeholder="Фамилия"></dd>
-                      <dt>Дата рождения:</dt>
-                      <dd><input type=date size=20 name=date_of_birth ></dd>
-                      <dt>Адрес:</dt>
-                      <dd><textarea rows="5" cols="30" name="address" placeholder="Адрес"></textarea></dd>
-                      <input type=submit value="Добавить">
-                  </dl>
-                <!--<dl>-->
-                    <!--<dt>Оборудование:</dt>-->
-                    <!--<dl><input type=text size=30 name=device_name>-->
-                    <!--<input type=submit value="Добавить"></dl>-->
-                <!--</dl>-->
-            </form>
-            </td>
-        </tr>
 
-    </table>
+</div>
+        <div id="main">
+
+
+    <form action="{{ url_for('add') }}" method="POST" id="add_form">
+        <fieldset>
+            <legend>Информация о персоне</legend>
+            <div>
+                <label for="first_name">Имя:</label>
+                <input type="text" name="first_name" id="first_name" class="txt" placeholder="Имя"/>
+            </div>
+
+            <div>
+                <label for="last_name">Фамилия:</label>
+                <input type="text" name="last_name" id="last_name" class="txt" placeholder="Фамилия"/>
+            </div>
+
+            <div>
+                <label for="date_of_birth">Дата рождения:</label>
+                <input type=date name=date_of_birth id="date_of_birth" class="txt" >
+            </div>
+            <div>
+                <label for="address">Дата рождения:</label>
+                <textarea rows="5" cols="30" name="address" id="address" placeholder="Адрес" class="txt"></textarea>
+            </div>
+        </fieldset>
+
+        <div>
+        <input type="submit" name="btnSubmit" id="btnSubmit" value="Добавить" class="btn" />
+        </div>
+    </form>
+
+</div>
 </div>
 </body>
 </html>
