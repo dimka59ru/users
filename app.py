@@ -13,7 +13,7 @@ DB_URI = 'sqlite:///' + os.path.join(os.path.dirname(__file__), 'users.db')
 
 app = Flask(__name__)
 app.secret_key = 'some_secret'
-app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI 
+app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
 db = SQLAlchemy(app)
 
 
@@ -33,7 +33,6 @@ def dated_url_for(endpoint, **values):
     return url_for(endpoint, **values)
 
 
-
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(20))
@@ -46,7 +45,7 @@ class User(db.Model):
 @app.route('/sort/<string:sort>', methods=['GET', 'POST'])
 def index(sort=None):
     # главная страница
-        
+
     users = db_query(request.args.get('search_last_name'), request.args.get('sort'))
 
     return render_template('index.html', users=users)
@@ -76,12 +75,33 @@ def add():
     return render_template('add.html', messages=messages)
 
 
-# @app.route('/edit/')
+# @app.route('/edit/', methods=['GET', 'POST'])
 @app.route('/edit/<int:id>', methods=['GET', 'POST'])
 def edit(id=None):
     # редактирование пользователя
-    user = User.query.get(id)
-    return render_template('edit.html', user=user )
+    messages = []
+    user = None
+
+    if id:
+        user = User.query.get(id)
+    if not user:
+        messages.append("Пользователь не найден!")
+
+    # Если форма отправлена
+    if request.method == "POST":
+        messages = form_validated(request)
+
+        if not messages and user:
+            user.first_name = request.form['first_name']
+            user.last_name = request.form['last_name']
+            user.date_of_birth = datetime.strptime(request.form['date_of_birth'], '%Y-%m-%d')
+            user.address = request.form['address']
+            db.session.commit()
+
+            flash('Успешно изменен!')
+            return redirect(url_for('index'))
+
+    return render_template('edit.html', user=user, messages=messages)
 
 
 def form_validated(request):
@@ -125,7 +145,7 @@ def db_query(last_name=None, sort=None):
         elif sort == "id":
             # выборка с поиском по фамилии. сортировка по id          
             users = User.query.filter(User.last_name.contains(last_name)).order_by(User.id)
-    
+
     elif not last_name and sort:
 
         if sort == "lastname":
@@ -141,6 +161,7 @@ def db_query(last_name=None, sort=None):
         users = User.query.order_by(User.id)
 
     return users
+
 
 if __name__ == '__main__':
     app.run(debug=True)

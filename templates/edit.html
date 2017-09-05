@@ -8,17 +8,53 @@
 <body>
 <div id="wrapper">
     <div id="header">
-    <a href="/">На главную</a>
+        <a href="/">На главную</a>
+        {% if messages %}
+        <div class=error><strong>Ошибки:</strong>
+            {% for message in messages %}
+            <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
 
     </div>
 
     <div id="main">
-    {% if user %}
-    	{{user.last_name}}
-    	{{user.first_name}}
-    	{{user.date_of_birth.strftime('%d.%m.%Y')}}
-    	{{user.address}}
-    {% endif %}
+        {% if user %}
+        <form action="{{ url_for('edit', id=user.id) }}" method="POST" id="add_form">
+            <fieldset>
+                <legend>Информация о персоне</legend>
+                <div>
+                    <label for="first_name">Имя:</label>
+                    <input type="text" name="first_name" id="first_name" class="txt" placeholder="Имя"
+                           value="{{user.first_name}}"/>
+                </div>
+
+                <div>
+                    <label for="last_name">Фамилия:</label>
+                    <input type="text" name="last_name" id="last_name" class="txt" placeholder="Фамилия"
+                           value="{{user.last_name}}"/>
+                </div>
+
+                <div>
+                    <label for="date_of_birth">Дата рождения:</label>
+                    <input type=text name=date_of_birth id="date_of_birth" class="txt" placeholder="ГГГГ-ММ-ДД"
+                           class="masked"
+                           pattern="[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])"
+                           data-valid-example="1988-04-23" value="{{user.date_of_birth.strftime('%Y-%m-%d')}}">
+                </div>
+                <div>
+                    <label for="address">Адрес:</label>
+                    <textarea rows="5" cols="30" name="address" id="address" placeholder="Адрес" class="txt">{{user.address}}</textarea>
+                </div>
+            </fieldset>
+
+            <div>
+                <input type="submit" name="btnSubmit" id="btnSubmit" value="Изменить" class="btn"/>
+            </div>
+        </form>
+        {% endif %}
+
     </div>
 </div>
 </body>

@@ -10,11 +10,11 @@
 <div id="header">
     <a href="/">На главную</a>
     {% if messages %}
-        <div class=error><strong>Ошибки:</strong>
+    <div class=error><strong>Ошибки:</strong>
         {% for message in messages %}
         <p>{{ message }}</p>
         {% endfor %}
-        </div>
+    </div>
     {% endif %}
 
 
