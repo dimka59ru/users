@@ -8,10 +8,9 @@
 <body>
 <div id="wrapper">
     <div id="header">
-        <a href="/add">Добавить человека</a>
-        <a href="/?sort=lastname">Сортировать по фамилии</a>
-        <a href="/?sort=firstname">Сортировать по имени</a>
-        <a href="/">Сортировать по ID</a>
+        <p><a href="/add">Добавить человека</a> <a href="/">Сброс фильтров</a></p>
+        
+        
     {% with messages = get_flashed_messages() %}
         {% if messages %}
         <ul class=flashes>
@@ -22,16 +21,60 @@
          {% endif %}
     {% endwith %}
 
-
+    <form action="" method="GET" id="search_form">        
+            <input type="text" name="search_last_name" id="last_name" class="txt" placeholder="Фамилия"/>
+            <input type="submit" id="btnSubmit" value="Искать" class="btn" />
+        </form>
     </div>
 
     <div id="main">
     <table id="user_list">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Фамилия</th>
-                <th>Имя</th>
+                <th>
+                    
+                    {% if request.args.get('search_last_name') and not request.args.get('sort') %}
+                        <a href="{{request.url}}&sort=id">ID</a>  
+                    {% elif request.args.get('search_last_name') and request.args.get('sort') %} 
+                         {% if request.args.get('sort') != 'id'  %}
+                            <a href="/?search_last_name={{request.args.get('search_last_name')}}&sort=id">ID</a> 
+                         {% else %}
+                            <a href="{{request.url}}">ID</a> 
+                        {% endif%}
+                    {% else %}
+                       <a href="/?sort=id">ID</a>
+                    {% endif%}
+
+
+                </th>
+                <th>
+                    {% if request.args.get('search_last_name') and not request.args.get('sort') %}
+                        <a href="{{request.url}}&sort=lastname">Фамилия</a>  
+                    {% elif request.args.get('search_last_name') and request.args.get('sort') %} 
+                         {% if request.args.get('sort') != 'lastname'  %}
+                            <a href="/?search_last_name={{request.args.get('search_last_name')}}&sort=lastname">Фамилия</a> 
+                         {% else %}
+                            <a href="{{request.url}}">Фамилия</a> 
+                        {% endif%}
+                    {% else %}
+                       <a href="/?sort=lastname">Фамилия</a>
+                    {% endif%}
+
+                </th>
+                <th>
+                    {% if request.args.get('search_last_name') and not request.args.get('sort') %}
+                        <a href="{{request.url}}&sort=firstname">Имя</a>  
+                    {% elif request.args.get('search_last_name') and request.args.get('sort') %}  
+                        {% if request.args.get('sort') != 'firstname'  %}
+                            <a href="/?search_last_name={{request.args.get('search_last_name')}}&sort=firstname">Имя</a> 
+                         {% else %}
+                            <a href="{{request.url}}">Имя</a> 
+                        {% endif%} 
+                    {% else %}
+                       <a href="/?sort=firstname">Имя</a>
+                    {% endif%}
+
+                </th>
                 <th>Дата рождения</th>
                 <th>Адрес</th>
             </tr>

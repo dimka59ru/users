@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet" type="text/css">
+    <title>Редактировать пользователя</title>
+</head>
+<body>
+<div id="wrapper">
+    <div id="header">
+    <a href="/">На главную</a>
+
+    </div>
+
+    <div id="main">
+    {% if user %}
+    	{{user.last_name}}
+    	{{user.first_name}}
+    	{{user.date_of_birth.strftime('%d.%m.%Y')}}
+    	{{user.address}}
+    {% endif %}
+    </div>
+</div>
+</body>
+</html>

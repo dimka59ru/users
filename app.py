@@ -9,8 +9,12 @@ import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
+DB_URI = 'sqlite:///' + os.path.join(os.path.dirname(__file__), 'users.db')
+
 app = Flask(__name__)
 app.secret_key = 'some_secret'
+app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI 
+db = SQLAlchemy(app)
 
 
 # Для генерации уникальных ссылок на статичные файлы, чтоб не кэшировались
@@ -29,12 +33,6 @@ def dated_url_for(endpoint, **values):
     return url_for(endpoint, **values)
 
 
-db_path = os.path.join(os.path.dirname(__file__), 'users.db')
-db_uri = 'sqlite:///{}'.format(db_path)
-app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
-
-db = SQLAlchemy(app)
-
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -44,22 +42,12 @@ class User(db.Model):
     address = db.Column(db.Text)
 
 
-@app.route('/')
-def index():
+@app.route('/', methods=['GET'])
+@app.route('/sort/<string:sort>', methods=['GET', 'POST'])
+def index(sort=None):
     # главная страница
-    users = []
-    if request.args.get('sort'):
-        # Если есть в сроке параметр сортировки, то делаем выбор из базы с учетом параметра
-        sort = request.args.get('sort')
-
-        if sort == "lastname":
-            # выбор с сортировкой по фамилии
-            users = User.query.order_by(User.last_name)
-        elif sort == "firstname":
-            # выбор с сортировкой по имени
-            users = User.query.order_by(User.first_name)
-    else:
-        users = User.query.order_by(User.id)
+        
+    users = db_query(request.args.get('search_last_name'), request.args.get('sort'))
 
     return render_template('index.html', users=users)
 
@@ -88,6 +76,14 @@ def add():
     return render_template('add.html', messages=messages)
 
 
+# @app.route('/edit/')
+@app.route('/edit/<int:id>', methods=['GET', 'POST'])
+def edit(id=None):
+    # редактирование пользователя
+    user = User.query.get(id)
+    return render_template('edit.html', user=user )
+
+
 def form_validated(request):
     # Проверка формы. # Возврашает список ошибок
     messages = []
@@ -102,6 +98,49 @@ def form_validated(request):
 
     return messages
 
+
+def db_query(last_name=None, sort=None):
+    # выбор данных из базы с сортировкой и фильтрами
+    # last_name принимает строку - фамилию, которую ищем в базе
+    # sort принимает строку. В зависимости от значения строки,
+    # сортировка происходит по разным полям
+
+    users = []
+
+    if last_name and not sort:
+
+        # выборка с поиском по фамилии. сортировка по id                              
+        users = User.query.order_by(User.id).filter(User.last_name.contains(last_name))
+
+    elif last_name and sort:
+
+        if sort == "lastname":
+            # выборка с поиском по фамилии. сортировка по фамилии            
+            users = User.query.filter(User.last_name.contains(last_name)).order_by(User.last_name)
+
+        elif sort == "firstname":
+            # выборка с поиском по фамилии. сортировка по имени           
+            users = User.query.filter(User.last_name.contains(last_name)).order_by(User.first_name)
+
+        elif sort == "id":
+            # выборка с поиском по фамилии. сортировка по id          
+            users = User.query.filter(User.last_name.contains(last_name)).order_by(User.id)
+    
+    elif not last_name and sort:
+
+        if sort == "lastname":
+            # выборка. сортировка по фамилии            
+            users = User.query.order_by(User.last_name)
+
+        elif sort == "firstname":
+            # выборка. сортировка по имени           
+            users = User.query.order_by(User.first_name)
+        else:
+            users = User.query.order_by(User.id)
+    else:
+        users = User.query.order_by(User.id)
+
+    return users
 
 if __name__ == '__main__':
     app.run(debug=True)
