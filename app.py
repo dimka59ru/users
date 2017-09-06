@@ -2,18 +2,21 @@
 from flask import Flask, render_template, url_for, request, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-import os
+from forms import AddUserForm
+from flask_wtf.csrf import CSRFProtect
 import sys
+import os
 
 # Для отображения русских символов (utf-8) на странице
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
-DB_URI = 'sqlite:///' + os.path.join(os.path.dirname(__file__), 'users.db')
+csrf = CSRFProtect()
 
 app = Flask(__name__)
-app.secret_key = 'some_secret'
-app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
+csrf.init_app(app)
+app.config.from_object('config')
+
 db = SQLAlchemy(app)
 
 
@@ -44,7 +47,7 @@ class User(db.Model):
 @app.route('/', methods=['GET'])
 @app.route('/sort/<string:sort>', methods=['GET', 'POST'])
 def index(sort=None):
-    # главная страница
+    # главная страница    
 
     users = db_query(request.args.get('search_last_name'), request.args.get('sort'))
 
@@ -52,56 +55,48 @@ def index(sort=None):
 
 
 @app.route('/add', methods=['GET', 'POST'])
-def add():
-    messages = None
-    # Если форма отправлена
-    if request.method == "POST":
-        messages = form_validated(request)
+def add():    
+    form = AddUserForm()
+    if form.validate_on_submit():
+        user = User(first_name=form.first_name.data,
+                    last_name=form.last_name.data,
+                    date_of_birth=form.date_of_birth.data,
+                    address=form.address.data)
+        db.session.add(user)
+        db.session.commit()
+        flash('Успешно добавлен!')
+        return redirect(url_for('index'))
 
-        # Если ошибок нет, то записываем данные в базу и делаем редирект на главную страницу
-        if not messages:
-            first_name = request.form['first_name']
-            last_name = request.form['last_name']
-            date_of_birth = datetime.strptime(request.form['date_of_birth'], '%Y-%m-%d')
-            address = request.form['address']
-
-            user = User(first_name=first_name, last_name=last_name, date_of_birth=date_of_birth, address=address)
-            db.session.add(user)
-            db.session.commit()
-
-            flash('Успешно добавлен!')
-            return redirect(url_for('index'))
-
-    return render_template('add.html', messages=messages)
+    return render_template('add.html', form=form)
 
 
-# @app.route('/edit/', methods=['GET', 'POST'])
+#@app.route('/edit/', methods=['GET', 'POST'])
 @app.route('/edit/<int:id>', methods=['GET', 'POST'])
 def edit(id=None):
-    # редактирование пользователя
-    messages = []
-    user = None
+    # редактирование пользователя    
+    user = User.query.get(id)
+    form = AddUserForm()         
 
-    if id:
-        user = User.query.get(id)
-    if not user:
-        messages.append("Пользователь не найден!")
+    if form.validate_on_submit():
+        user.first_name = form.first_name.data
+        user.last_name = form.last_name.data
+        user.date_of_birth = form.date_of_birth.data
+        user.address = form.address.data
+        print user.first_name
+        db.session.commit()
+        flash('Успешно изменен!')
+        return redirect(url_for('index'))
+    else:        
+        if user:
+            form.first_name.data = user.first_name
+            form.last_name.data = user.last_name
+            form.date_of_birth.data = user.date_of_birth
+            form.address.data = user.address  
 
-    # Если форма отправлена
-    if request.method == "POST":
-        messages = form_validated(request)
-
-        if not messages and user:
-            user.first_name = request.form['first_name']
-            user.last_name = request.form['last_name']
-            user.date_of_birth = datetime.strptime(request.form['date_of_birth'], '%Y-%m-%d')
-            user.address = request.form['address']
-            db.session.commit()
-
-            flash('Успешно изменен!')
-            return redirect(url_for('index'))
-
-    return render_template('edit.html', user=user, messages=messages)
+    if user:
+        return render_template('edit.html', user=user, form=form)
+    else:
+        return render_template('edit.html')
 
 
 def form_validated(request):

@@ -9,13 +9,25 @@
     <div id="wrapper">
 <div id="header">
     <a href="/">На главную</a>
-    {% if messages %}
+    {% if form.errors %}
     <div class=error><strong>Ошибки:</strong>
-        {% for message in messages %}
-        <p>{{ message }}</p>
-        {% endfor %}
+        {% for error in form.errors.first_name %}
+        <p>{{error}}</p>
+    {% endfor %}
+    {% for error in form.errors.last_name %}
+        <p>{{error}}</p>
+    {% endfor %}
+
+    {% for error in form.errors.date_of_birth %}
+        <p>{{error}}</p>
+    {% endfor %}
+
+    {% for error in form.errors.address %}
+        <p>{{error}}</p>
+    {% endfor %}
     </div>
-    {% endif %}
+    {% endif %}   
+    
 
 
 </div>
@@ -23,26 +35,29 @@
 
 
     <form action="{{ url_for('add') }}" method="POST" id="add_form">
+    {{ form.csrf_token }}
         <fieldset>
             <legend>Информация о персоне</legend>
             <div>
-                <label for="first_name">Имя:</label>
-                <input type="text" name="first_name" id="first_name" class="txt" placeholder="Имя"/>
+                <label for="first_name">{{form.first_name.label}}</label>            
+                {{form.first_name(class_="txt")}}
             </div>
 
             <div>
-                <label for="last_name">Фамилия:</label>
-                <input type="text" name="last_name" id="last_name" class="txt" placeholder="Фамилия"/>
+            <label for="last_name">{{form.last_name.label}}</label>            
+            {{form.last_name(class_="txt")}}
             </div>
 
             <div>
-                <label for="date_of_birth">Дата рождения:</label>
-                <input type=text name=date_of_birth id="date_of_birth" class="txt" placeholder="ГГГГ-ММ-ДД" class="masked" pattern="[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])" data-valid-example="1988-04-23">
+            <label for="date_of_birth">{{form.date_of_birth.label}}</label>            
+            {{form.date_of_birth(class_="txt")}}
             </div>
+
             <div>
-                <label for="address">Адрес:</label>
-                <textarea rows="5" cols="30" name="address" id="address" placeholder="Адрес" class="txt"></textarea>
+            <label for="address">{{form.address.label}}</label>            
+            {{form.address(class_="txt")}}
             </div>
+
         </fieldset>
 
         <div>

@@ -1,0 +1,6 @@
+Необходимы:
+python 2.7
+flask
+flask-sqlalchemy
+flask-wtf
+wtforms

@@ -69,8 +69,8 @@ background: #edf1f5;
 
 #add_form div label {
     float: left;
-    width: 40%;
-    font-size: 18px;
+    width: 50%;
+    font-size: 14px;
 }
 #add_form  fieldset {
     border: 1px dotted #CCC;
