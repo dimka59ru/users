@@ -19,6 +19,13 @@ app.config.from_object('config')
 
 db = SQLAlchemy(app)
 
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.String(20))
+    last_name = db.Column(db.String(50))
+    date_of_birth = db.Column(db.DateTime)
+    address = db.Column(db.Text)
+
 
 # Для генерации уникальных ссылок на статичные файлы, чтоб не кэшировались
 @app.context_processor
@@ -34,14 +41,6 @@ def dated_url_for(endpoint, **values):
                                      endpoint, filename)
             values['q'] = int(os.stat(file_path).st_mtime)
     return url_for(endpoint, **values)
-
-
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(20))
-    last_name = db.Column(db.String(50))
-    date_of_birth = db.Column(db.DateTime)
-    address = db.Column(db.Text)
 
 
 @app.route('/', methods=['GET'])
@@ -159,4 +158,5 @@ def db_query(last_name=None, sort=None):
 
 
 if __name__ == '__main__':
+    # db.create_all()
     app.run(debug=True)
